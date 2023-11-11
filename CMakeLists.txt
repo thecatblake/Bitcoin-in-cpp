@@ -18,6 +18,8 @@ add_library(Bitcoin
         BigInt.cpp
         FiniteElement.cpp
         FiniteElement.h
+        Point.cpp
+        Point.h
 )
 
 add_executable(main main.cpp)
@@ -26,7 +28,8 @@ add_executable(finite_element_set_explorer finite_element_set_explorer.cpp)
 target_link_libraries(finite_element_set_explorer Bitcoin)
 
 add_executable(test test/test.cpp
-        test/test_FiniteElement.h)
+        test/test_FiniteElement.h
+        test/test_Point.h)
 target_link_libraries(test Bitcoin GTest::gtest_main)
 
 include(GoogleTest)
