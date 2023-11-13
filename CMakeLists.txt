@@ -16,10 +16,12 @@ FetchContent_MakeAvailable(googletest)
 
 add_library(Bitcoin
         BigInt.cpp
-        FiniteElement.cpp
-        FiniteElement.h
+        FieldElement.cpp
+        FieldElement.h
         Point.cpp
         Point.h
+        secp256k1.cpp
+        secp256k1.h
 )
 
 add_executable(main main.cpp)
@@ -29,7 +31,8 @@ target_link_libraries(finite_element_set_explorer Bitcoin)
 
 add_executable(test test/test.cpp
         test/test_FiniteElement.h
-        test/test_Point.h)
+        test/test_Point.h
+        test/test_secp256k1.h)
 target_link_libraries(test Bitcoin GTest::gtest_main)
 
 include(GoogleTest)

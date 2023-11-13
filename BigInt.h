@@ -121,6 +121,6 @@ public:
 #ifndef BIG_INT_MATH_FUNCTIONS_HPP
 #define BIG_INT_MATH_FUNCTIONS_HPP
 
-BigInt pow(const BigInt& base, int exp);
+BigInt pow(const BigInt& base, BigInt exp);
 
 #endif // BIG_INT_MATH_FUNCTIONS_HPP

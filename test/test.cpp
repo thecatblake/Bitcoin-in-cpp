@@ -3,3 +3,5 @@
 //
 
 #include "test/test_FiniteElement.h"
+#include "test_Point.h"
+#include "test_secp256k1.h"

@@ -5,22 +5,26 @@
 #ifndef BITCOIN_IN_CPP_POINT_H
 #define BITCOIN_IN_CPP_POINT_H
 
-#include "BigInt.h"
+#include "FieldElement.h"
 
 class Point {
 public:
-    Point(const BigInt& x, const BigInt& y, const BigInt& a, const BigInt& b, bool inf=false);
+    Point(const FieldElement& x, const FieldElement& y, const FieldElement& a, const FieldElement& b, bool inf=false);
     bool operator==(const Point& other) const;
     bool operator!=(const Point& other) const;
+    Point operator*(const BigInt& sc) const;
 
     Point add(const Point& other) const;
-    BigInt a;
-    BigInt b;
-    BigInt x;
-    BigInt y;
-    bool inf;
+    FieldElement a;
+    FieldElement b;
+    FieldElement x;
+    FieldElement y;
+    bool inf = false;
+    bool invalid = false;
 };
 
+std::ostream& operator << ( std::ostream& outs, const Point & finiteElement );
 Point operator+(const Point& a, const Point& b);
+Point operator*(const BigInt& sc, const Point& p);
 
 #endif //BITCOIN_IN_CPP_POINT_H

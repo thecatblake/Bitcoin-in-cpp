@@ -772,7 +772,7 @@ BigInt big_pow10(size_t exp) {
     Returns a BigInt equal to base^exp.
 */
 
-BigInt pow(const BigInt& base, int exp) {
+BigInt pow(const BigInt& base, BigInt exp) {
     if (exp < 0) {
         if (base == 0)
             throw std::logic_error("Cannot divide by zero");
@@ -786,7 +786,7 @@ BigInt pow(const BigInt& base, int exp) {
 
     BigInt result = base, result_odd = 1;
     while (exp > 1) {
-        if (exp % 2)
+        if (exp % 2 == 1)
             result_odd *= result;
         result *= result;
         exp /= 2;
