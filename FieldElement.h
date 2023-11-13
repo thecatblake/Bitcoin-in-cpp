@@ -6,24 +6,26 @@
 #define BITCOIN_IN_CPP_FIELDELEMENT_H
 
 #include <iostream>
-#include "BigInt.h"
+#include <boost/multiprecision/integer.hpp>
+
+boost::multiprecision::int512_t modpow(boost::multiprecision::int512_t base, boost::multiprecision::int512_t exp, const boost::multiprecision::int512_t& modulus);
 
 class FieldElement {
 public:
-    FieldElement(const BigInt& num, const BigInt& prime);
+    FieldElement(boost::multiprecision::int512_t  num, boost::multiprecision::int512_t  prime);
     FieldElement add(const FieldElement& other) const;
     FieldElement sub(const FieldElement& other) const;
     FieldElement mul(const FieldElement& other) const;
     FieldElement div(const FieldElement& other) const;
-    FieldElement pow(const BigInt& exp) const;
+    FieldElement pow(const boost::multiprecision::int512_t& exp) const;
     bool operator==(const FieldElement & other) const;
     bool operator!=(const FieldElement & other) const;
     FieldElement operator-() const;
-    FieldElement operator*(const BigInt& sc) const;
+    FieldElement operator*(const boost::multiprecision::int512_t& sc) const;
     std::string to_string() const;
     FieldElement check() const;
-    BigInt num;
-    BigInt prime;
+    boost::multiprecision::int512_t num;
+    boost::multiprecision::int512_t prime;
 };
 
 std::ostream& operator << ( std::ostream& outs, const FieldElement & finiteElement );

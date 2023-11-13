@@ -4,6 +4,7 @@ project(Bitcoin_in_cpp)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(/opt/homebrew/include/)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -23,6 +24,7 @@ add_library(Bitcoin
         secp256k1.cpp
         secp256k1.h
 )
+
 
 add_executable(main main.cpp)
 target_link_libraries(main Bitcoin)

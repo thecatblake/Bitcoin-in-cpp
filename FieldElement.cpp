@@ -4,7 +4,22 @@
 
 #include "FieldElement.h"
 
-FieldElement::FieldElement(const BigInt& num, const BigInt& prime): num(num), prime(prime) {
+#include <utility>
+
+
+boost::multiprecision::int512_t modpow(boost::multiprecision::int512_t base, boost::multiprecision::int512_t exp, const boost::multiprecision::int512_t& modulus) {
+    base %= modulus;
+    boost::multiprecision::int512_t result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1)
+            result = (result * base) % modulus;
+        base = (base * base) % modulus;
+        exp /= 2;
+    }
+    return result;
+}
+
+FieldElement::FieldElement(boost::multiprecision::int512_t  num, boost::multiprecision::int512_t  prime): num(std::move(num)), prime(std::move(prime)) {
 
 }
 
@@ -13,7 +28,7 @@ bool FieldElement::operator==(const FieldElement &other) const {
 }
 
 std::string FieldElement::to_string() const {
-    return "FiniteElement_" + prime.to_string() + "(" + num.to_string() + ")";
+    return "FiniteElement_" + boost::multiprecision::to_string(prime) + "(" + boost::multiprecision::to_string(num) + ")";
 }
 
 bool FieldElement::operator!=(const FieldElement &other) const {
@@ -25,8 +40,8 @@ FieldElement FieldElement::add(const FieldElement &other) const {
 }
 
 FieldElement FieldElement::sub(const FieldElement &other) const {
-    BigInt n = (num - other.num) % prime;
-    if(n < 0) n += prime;
+    auto n = (num - other.num)  % prime;
+    if (n < 0) n += prime;
     return {n , prime};
 }
 
@@ -35,26 +50,13 @@ FieldElement FieldElement::mul(const FieldElement &other) const {
 }
 
 FieldElement FieldElement::div(const FieldElement &other) const {
-    return mul(other.pow((prime - 2)));
+    return {num * modpow(other.num, prime - 2, prime) % prime, prime};
 }
 
-FieldElement FieldElement::pow(const BigInt& exp) const {
+FieldElement FieldElement::pow(const boost::multiprecision::int512_t& exp) const {
     if(exp == 0) return {1, prime};
-    if(exp < 0) return pow(((prime - 2) * -exp) % (prime-1));
-
-    BigInt p = prime - 1;
-    BigInt result = 1;
-    BigInt coef = exp;
-    BigInt current = num % p;
-
-    while(coef != 0) {
-        if(coef % 2 == 1)
-            result = result * current % prime;
-        current = current * current % prime;
-        coef /= 2;
-    }
-
-    return {result, prime};
+    if(exp < 0) return pow(((prime - 2) * -1 * exp) % (prime-1));
+    return {modpow(num, exp % (prime-1), prime), prime};
 }
 
 FieldElement FieldElement::check() const {
@@ -62,10 +64,10 @@ FieldElement FieldElement::check() const {
 }
 
 FieldElement FieldElement::operator-() const {
-    return {-num, prime};
+    return {-1 * num, prime};
 }
 
-FieldElement FieldElement::operator*(const BigInt &sc) const {
+FieldElement FieldElement::operator*(const boost::multiprecision::int512_t &sc) const {
     return {(num * sc) % prime, prime};
 }
 

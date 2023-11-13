@@ -45,9 +45,9 @@ Point Point::add(const Point &other) const {
     }
 }
 
-Point Point::operator*(const BigInt& sc) const {
+Point Point::operator*(const boost::multiprecision::int512_t& sc) const {
     Point p(x, y, a, b);
-    BigInt coef = sc;
+    boost::multiprecision::int512_t coef = sc;
     Point result({0, x.prime}, {0, y.prime}, a, b, true);
     while(coef != 0) {
         if(coef % 2 == 1)
@@ -67,6 +67,6 @@ Point operator+(const Point& a, const Point& b) {
     return a.add(b);
 }
 
-Point operator*(const BigInt& sc, const Point& p) {
+Point operator*(const boost::multiprecision::int512_t& sc, const Point& p) {
     return p * sc;
 }
