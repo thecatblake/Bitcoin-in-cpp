@@ -7,25 +7,26 @@
 
 #include <iostream>
 #include <boost/multiprecision/integer.hpp>
+#include <boost/multiprecision/random.hpp>
 
-boost::multiprecision::int512_t modpow(boost::multiprecision::int512_t base, boost::multiprecision::int512_t exp, const boost::multiprecision::int512_t& modulus);
+boost::multiprecision::int1024_t modpow(boost::multiprecision::int1024_t base, boost::multiprecision::int1024_t exp, const boost::multiprecision::int1024_t& modulus);
 
 class FieldElement {
 public:
-    FieldElement(boost::multiprecision::int512_t  num, boost::multiprecision::int512_t  prime);
+    FieldElement(boost::multiprecision::int1024_t  num, boost::multiprecision::int1024_t  prime);
     FieldElement add(const FieldElement& other) const;
     FieldElement sub(const FieldElement& other) const;
     FieldElement mul(const FieldElement& other) const;
     FieldElement div(const FieldElement& other) const;
-    FieldElement pow(const boost::multiprecision::int512_t& exp) const;
+    FieldElement pow(const boost::multiprecision::int1024_t& exp) const;
     bool operator==(const FieldElement & other) const;
     bool operator!=(const FieldElement & other) const;
     FieldElement operator-() const;
-    FieldElement operator*(const boost::multiprecision::int512_t& sc) const;
+    FieldElement operator*(const boost::multiprecision::int1024_t& sc) const;
     std::string to_string() const;
     FieldElement check() const;
-    boost::multiprecision::int512_t num;
-    boost::multiprecision::int512_t prime;
+    boost::multiprecision::int1024_t num;
+    boost::multiprecision::int1024_t prime;
 };
 
 std::ostream& operator << ( std::ostream& outs, const FieldElement & finiteElement );

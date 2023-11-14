@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(/opt/homebrew/include/)
+link_directories(/usr/local/lib)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -23,8 +24,11 @@ add_library(Bitcoin
         Point.h
         secp256k1.cpp
         secp256k1.h
+        cryptography.cpp
+        cryptography.h
 )
 
+target_link_libraries(Bitcoin crypto ssl)
 
 add_executable(main main.cpp)
 target_link_libraries(main Bitcoin)
@@ -34,7 +38,8 @@ target_link_libraries(finite_element_set_explorer Bitcoin)
 add_executable(test test/test.cpp
         test/test_FiniteElement.h
         test/test_Point.h
-        test/test_secp256k1.h)
+        test/test_secp256k1.h
+        test/test_cryptography.h)
 target_link_libraries(test Bitcoin GTest::gtest_main)
 
 include(GoogleTest)

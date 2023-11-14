@@ -7,9 +7,9 @@
 #include <utility>
 
 
-boost::multiprecision::int512_t modpow(boost::multiprecision::int512_t base, boost::multiprecision::int512_t exp, const boost::multiprecision::int512_t& modulus) {
+boost::multiprecision::int1024_t modpow(boost::multiprecision::int1024_t base, boost::multiprecision::int1024_t exp, const boost::multiprecision::int1024_t& modulus) {
     base %= modulus;
-    boost::multiprecision::int512_t result = 1;
+    boost::multiprecision::int1024_t result = 1;
     while (exp > 0) {
         if (exp % 2 == 1)
             result = (result * base) % modulus;
@@ -19,7 +19,7 @@ boost::multiprecision::int512_t modpow(boost::multiprecision::int512_t base, boo
     return result;
 }
 
-FieldElement::FieldElement(boost::multiprecision::int512_t  num, boost::multiprecision::int512_t  prime): num(std::move(num)), prime(std::move(prime)) {
+FieldElement::FieldElement(boost::multiprecision::int1024_t  num, boost::multiprecision::int1024_t  prime): num(std::move(num)), prime(std::move(prime)) {
 
 }
 
@@ -53,7 +53,7 @@ FieldElement FieldElement::div(const FieldElement &other) const {
     return {num * modpow(other.num, prime - 2, prime) % prime, prime};
 }
 
-FieldElement FieldElement::pow(const boost::multiprecision::int512_t& exp) const {
+FieldElement FieldElement::pow(const boost::multiprecision::int1024_t& exp) const {
     if(exp == 0) return {1, prime};
     if(exp < 0) return pow(((prime - 2) * -1 * exp) % (prime-1));
     return {modpow(num, exp % (prime-1), prime), prime};
@@ -67,7 +67,7 @@ FieldElement FieldElement::operator-() const {
     return {-1 * num, prime};
 }
 
-FieldElement FieldElement::operator*(const boost::multiprecision::int512_t &sc) const {
+FieldElement FieldElement::operator*(const boost::multiprecision::int1024_t &sc) const {
     return {(num * sc) % prime, prime};
 }
 

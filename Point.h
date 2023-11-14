@@ -12,7 +12,7 @@ public:
     Point(const FieldElement& x, const FieldElement& y, const FieldElement& a, const FieldElement& b, bool inf=false);
     bool operator==(const Point& other) const;
     bool operator!=(const Point& other) const;
-    Point operator*(const boost::multiprecision::int512_t& sc) const;
+    Point operator*(const boost::multiprecision::int1024_t& sc) const;
 
     Point add(const Point& other) const;
     FieldElement a;
@@ -25,6 +25,6 @@ public:
 
 std::ostream& operator << ( std::ostream& outs, const Point & finiteElement );
 Point operator+(const Point& a, const Point& b);
-Point operator*(const boost::multiprecision::int512_t& sc, const Point& p);
+Point operator*(const boost::multiprecision::int1024_t& sc, const Point& p);
 
 #endif //BITCOIN_IN_CPP_POINT_H
