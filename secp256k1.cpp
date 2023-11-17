@@ -11,6 +11,11 @@ std::string S256Field::to_string() const {
     return buf.get();
 }
 
+S256Field S256Field::sqrt() {
+    return pow((prime+1)/4);
+}
+
+
 S256Point S256Point::G() {
     return {boost::multiprecision::int1024_t(G_X), boost::multiprecision::int1024_t(G_Y)};
 }
@@ -28,13 +33,39 @@ bool S256Point::verify(const boost::multiprecision::int1024_t &z, const Signatur
     return total.x.num == sig.r;
 }
 
-void S256Point::sec(unsigned char* out) {
+void S256Point::sec(unsigned char* out, bool compressed) {
+    if(compressed) {
+        unsigned char buf[1 + 32 + 1];
+        buf[0] = y.num % 2 == 0 ? 2 : 3;
+        to_bytes(x.num, 32, buf + 1);
+        memcpy(out, buf, 1 + 32);
+        return;
+    }
+
     unsigned char buf[1 + 32 + 32 + 1];
     buf[0] = 4;
     to_bytes(x.num, 32, buf + 1);
     to_bytes(y.num, 32, buf + 1 + 32);
     buf[1 + 32 + 32] = '\0';
     memcpy(out, buf, 1 + 32 + 32 + 1);
+}
+
+S256Point S256Point::parse(unsigned char *sec_bin) {
+    if(sec_bin[0] == 4) {
+        auto x = from_bytes(sec_bin+1, 32);
+        auto y = from_bytes(sec_bin+1+32, 32);
+        return {x, y};
+    }
+
+    bool is_even = sec_bin[0] == 2;
+    auto lx = S256Field(from_bytes(sec_bin+1, 32));
+    S256Field alpha = lx*lx*lx + S256Field(B);
+    auto beta = alpha.sqrt();
+
+    if((is_even && beta.num % 2 == 1) || (!is_even && beta.num % 2 == 0))
+        beta = S256Field(beta.prime - beta.num);
+
+    return {x, beta};
 }
 
 S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point& p) {
@@ -64,4 +95,14 @@ Signature PrivateKey::sign(const boost::multiprecision::int1024_t& z, boost::mul
         s = N - s;
 
     return {r, s};
+}
+
+void Signature::der(unsigned char *out, bool big) {
+    unsigned char rbin[32];
+    to_bytes(r, 32, rbin);
+    int start=0;
+    while(rbin[start] == 0)
+        start++;
+
+    if(rbin[start] & 80)
 }

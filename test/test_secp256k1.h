@@ -62,4 +62,14 @@ TEST(secp256k1Test, SEC_format) {
     ASSERT_EQ(result, "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10");
 }
 
+TEST(secp256k1Test, compressed_SEC_format) {
+    PrivateKey pk(5001);
+    unsigned char sec[1 + 32 + 1];
+    pk.point.sec(sec, true);
+    auto n = from_bytes(sec, 1 + 32 + 1);
+    std::string result = bytes_to_str(sec, 1 + 32);
+
+    ASSERT_EQ(result, "0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1");
+}
+
 #endif //BITCOIN_IN_CPP_TEST_SECP256K1_H

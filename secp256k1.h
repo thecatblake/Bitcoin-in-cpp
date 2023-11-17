@@ -21,22 +21,28 @@ const boost::multiprecision::int1024_t N("11579208923731619542357098500868790785
 struct Signature {
     boost::multiprecision::int1024_t r;
     boost::multiprecision::int1024_t s;
+
+    void der(unsigned char* out, bool big=false);
 };
 
 class S256Field : public FieldElement {
 public:
     S256Field(const boost::multiprecision::int1024_t& num): FieldElement(num, boost::multiprecision::int1024_t(PRIME)) {}
+    S256Field(const FieldElement& e): FieldElement(e.num, boost::multiprecision::int1024_t(PRIME)) {}
     std::string to_string() const;
+    S256Field sqrt();
 };
 
 
 class S256Point : public Point {
 public:
     S256Point(const boost::multiprecision::int1024_t& x, const boost::multiprecision::int1024_t& y, bool inf=false): Point(S256Field(x), S256Field(y), S256Field(boost::multiprecision::int1024_t(A)), S256Field(boost::multiprecision::int1024_t(B)), inf) {}
+    S256Point(const S256Field x, const S256Field, bool inf=false): Point(x, y, S256Field(boost::multiprecision::int1024_t(A)), S256Field(boost::multiprecision::int1024_t(B)), inf) {}
     S256Point operator*(const boost::multiprecision::int1024_t& sc) const;
     bool verify(const boost::multiprecision::int1024_t& z, const Signature& sig) const;
     static S256Point G();
-    void sec(unsigned char* out);
+    void sec(unsigned char* out, bool compressed=false);
+    S256Point parse(unsigned char* sec_bin);
 };
 
 S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point& p);
