@@ -69,3 +69,22 @@ boost::multiprecision::int1024_t from_bytes(const unsigned char* digest, size_t 
 
     return x;
 }
+
+void to_bytes(boost::multiprecision::int1024_t n, int n_bytes, unsigned char* out, bool big) {
+    for(int i=1; i <= n_bytes; i++) {
+        unsigned char rem = (unsigned char)(n % 256);
+        out[big ? n_bytes - i : i] = rem;
+        n /= 256;
+    }
+}
+
+std::string bytes_to_str(unsigned char* bytes, int n_bytes) {
+    std::string result;
+    for (int i=0; i < n_bytes; i++) {
+        char c[3];
+        std::snprintf(c, 3, "%02x", bytes[i]);
+        result += c;
+    }
+
+    return result;
+}

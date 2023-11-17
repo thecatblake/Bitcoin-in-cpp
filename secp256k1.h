@@ -36,6 +36,7 @@ public:
     S256Point operator*(const boost::multiprecision::int1024_t& sc) const;
     bool verify(const boost::multiprecision::int1024_t& z, const Signature& sig) const;
     static S256Point G();
+    void sec(unsigned char* out);
 };
 
 S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point& p);

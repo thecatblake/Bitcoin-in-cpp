@@ -20,5 +20,8 @@ std::string digest2hex(unsigned char* digest, size_t len);
 boost::multiprecision::int1024_t hex2int512(std::string hex);
 
 boost::multiprecision::int1024_t from_bytes(const unsigned char* digest, size_t len);
+void to_bytes(boost::multiprecision::int1024_t n, int n_bytes, unsigned char* out, bool big= true);
+
+std::string bytes_to_str(unsigned char* bytes, int n_bytes);
 
 #endif //BITCOIN_IN_CPP_CRYPTOGRAPHY_H

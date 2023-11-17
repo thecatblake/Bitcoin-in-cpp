@@ -28,6 +28,15 @@ bool S256Point::verify(const boost::multiprecision::int1024_t &z, const Signatur
     return total.x.num == sig.r;
 }
 
+void S256Point::sec(unsigned char* out) {
+    unsigned char buf[1 + 32 + 32 + 1];
+    buf[0] = 4;
+    to_bytes(x.num, 32, buf + 1);
+    to_bytes(y.num, 32, buf + 1 + 32);
+    buf[1 + 32 + 32] = '\0';
+    memcpy(out, buf, 1 + 32 + 32 + 1);
+}
+
 S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point& p) {
     return p * sc;
 }
