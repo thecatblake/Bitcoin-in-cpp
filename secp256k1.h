@@ -18,11 +18,17 @@ const boost::multiprecision::int1024_t N("11579208923731619542357098500868790785
 #define A 0
 #define B 7
 
+#define SEC_COMPRESSED_LENGTH 33
+#define SEC_LENGTH 65
+
+// 1 + 1 + 1  + 1 + 1 + 33 + 33 marker + length of sig + marker for r value + r value length
+#define DER_BUF_LENGTH 71
+
 struct Signature {
     boost::multiprecision::int1024_t r;
     boost::multiprecision::int1024_t s;
 
-    void der(unsigned char* out, bool big=false);
+    int der(unsigned char* out, bool big=false) const;
 };
 
 class S256Field : public FieldElement {
@@ -43,6 +49,9 @@ public:
     static S256Point G();
     void sec(unsigned char* out, bool compressed=false);
     S256Point parse(unsigned char* sec_bin);
+
+    int hash160(unsigned char* digest, bool compressed=true);
+    std::string address(bool compressed=true, bool testnet=false);
 };
 
 S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point& p);
@@ -50,6 +59,7 @@ S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point&
 
 class PrivateKey {
 public:
+    PrivateKey(const std::string& secret);
     PrivateKey(boost::multiprecision::int1024_t  secret);
     std::string to_string();
     Signature sign(const boost::multiprecision::int1024_t& z, boost::multiprecision::int1024_t k = -1);

@@ -35,19 +35,18 @@ bool S256Point::verify(const boost::multiprecision::int1024_t &z, const Signatur
 
 void S256Point::sec(unsigned char* out, bool compressed) {
     if(compressed) {
-        unsigned char buf[1 + 32 + 1];
+        unsigned char buf[SEC_COMPRESSED_LENGTH];
         buf[0] = y.num % 2 == 0 ? 2 : 3;
         to_bytes(x.num, 32, buf + 1);
-        memcpy(out, buf, 1 + 32);
+        memcpy(out, buf, SEC_COMPRESSED_LENGTH);
         return;
     }
 
-    unsigned char buf[1 + 32 + 32 + 1];
+    unsigned char buf[SEC_LENGTH];
     buf[0] = 4;
     to_bytes(x.num, 32, buf + 1);
     to_bytes(y.num, 32, buf + 1 + 32);
-    buf[1 + 32 + 32] = '\0';
-    memcpy(out, buf, 1 + 32 + 32 + 1);
+    memcpy(out, buf, SEC_LENGTH);
 }
 
 S256Point S256Point::parse(unsigned char *sec_bin) {
@@ -66,6 +65,19 @@ S256Point S256Point::parse(unsigned char *sec_bin) {
         beta = S256Field(beta.prime - beta.num);
 
     return {x, beta};
+}
+
+int S256Point::hash160(unsigned char *digest, bool compressed) {
+    unsigned char out[compressed ? SEC_COMPRESSED_LENGTH : SEC_LENGTH];
+    sec(out, compressed);
+    return ::hash160(out, compressed ? SEC_COMPRESSED_LENGTH : SEC_LENGTH, digest);
+}
+
+std::string S256Point::address(bool compressed, bool testnet) {
+    unsigned char out[1+RIPEMD160_DIGEST_LENGTH];
+    hash160(out+1, compressed);
+    out[0] = testnet ? 0x6f : 0x00;
+    return encode_base58_checksum(out, 1+RIPEMD160_DIGEST_LENGTH);
 }
 
 S256Point operator*(const boost::multiprecision::int1024_t& sc, const S256Point& p) {
@@ -97,12 +109,32 @@ Signature PrivateKey::sign(const boost::multiprecision::int1024_t& z, boost::mul
     return {r, s};
 }
 
-void Signature::der(unsigned char *out, bool big) {
+PrivateKey::PrivateKey(const std::string& secret): secret(boost::multiprecision::int1024_t(secret)) {
+
+}
+
+int Signature::der(unsigned char *out, bool big) const {
     unsigned char rbin[32];
     to_bytes(r, 32, rbin);
-    int start=0;
-    while(rbin[start] == 0)
-        start++;
+    int i=0;
+    while(i < 32 && rbin[i] == 0) i++;
+    bool rflag = rbin[i] & 0x80;
 
-    if(rbin[start] & 80)
+    unsigned char sbin[32];
+    to_bytes(s, 32, sbin);
+    int j = 0;
+    while(j < 32 && sbin[j] == 0) j++;
+    bool sflag = sbin[j] & 0x80;
+
+    out[0] = 0x30;
+    out[1] = 32 + 32 + 1 + 1 + 1 + 1 + 1;
+    out[2] = 0x02;
+    out[3] = 32 - i + rflag;
+    out[4] = 0x00;
+    memcpy(out+4+rflag, rbin+i, 32-i);
+    out[4 + rflag + 32 - i ] = 0x02;
+    out[4 + rflag + 32 - i + 1] = 32 - j + sflag;
+    out[4 + rflag + 32 - i + 2] = 0x00;
+    memcpy(out + 4+rflag+32-i+2+sflag, sbin+j, 32-j);
+    return 4+rflag+32-i+2+sflag+32-j;
 }

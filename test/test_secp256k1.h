@@ -6,6 +6,7 @@
 #define BITCOIN_IN_CPP_TEST_SECP256K1_H
 
 #include <gtest/gtest.h>
+#include <string>
 #include "secp256k1.h"
 
 
@@ -54,22 +55,50 @@ TEST(secp256k1Test, signing_veryfing) {
 
 TEST(secp256k1Test, SEC_format) {
     PrivateKey pk(5000);
-    unsigned char sec[1 + 32 + 32 + 1];
-    pk.point.sec(sec);
-    auto n = from_bytes(sec, 1 + 32 + 32 + 1);
-    std::string result = bytes_to_str(sec, 1 + 32 + 32);
+    unsigned char sec[SEC_LENGTH];
+    pk.point.sec(sec, false);
+    std::string result = bytes_to_str(sec, SEC_LENGTH);
 
     ASSERT_EQ(result, "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10");
 }
 
 TEST(secp256k1Test, compressed_SEC_format) {
     PrivateKey pk(5001);
-    unsigned char sec[1 + 32 + 1];
+    unsigned char sec[SEC_COMPRESSED_LENGTH];
     pk.point.sec(sec, true);
-    auto n = from_bytes(sec, 1 + 32 + 1);
-    std::string result = bytes_to_str(sec, 1 + 32);
+    std::string result = bytes_to_str(sec, SEC_COMPRESSED_LENGTH);
 
     ASSERT_EQ(result, "0357a4f368868a8a6d572991e484e664810ff14c05c0fa023275251151fe0e53d1");
+}
+
+TEST(secp256k1Test, der_format) {
+    boost::multiprecision::int1024_t r("24934477526773085068622965895147445253088155263472363298185420205900230535110");
+    boost::multiprecision::int1024_t s("63617477430228947890476775612691984600680877069283092420476557621266469411564");
+
+    Signature sig {r, s};
+
+    unsigned char out[DER_BUF_LENGTH];
+    int len = sig.der(out);
+    std::string result = bytes_to_str(out, len);
+
+    ASSERT_EQ(result, "3045022037206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c60221008ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec");
+}
+
+TEST(secp256k1Test, address_of_public_key) {
+    PrivateKey pk(5002);
+    std::string result = pk.point.address(false, true);
+
+    EXPECT_EQ(result, "mmTPbXQFxboEtNRkwfh6K51jvdtHLxGeMA");
+
+    PrivateKey pk2("33632321603200000");
+    std::string result2 = pk.point.address(true, true);
+
+    EXPECT_EQ(result2, "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH");
+
+    PrivateKey pk3("320257972354799");
+    std::string result3 = pk.point.address(true, false);
+
+    EXPECT_EQ(result3, "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1");
 }
 
 #endif //BITCOIN_IN_CPP_TEST_SECP256K1_H

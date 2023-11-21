@@ -10,10 +10,15 @@
 #include <boost/format.hpp>
 
 #define SHA256_DIGEST_LENGTH 32 // 256 / 8
+#define RIPEMD160_DIGEST_LENGTH 20 // 160 / 8
 
 int sha256(unsigned char* message, size_t message_len, unsigned char* digest);
 
 int hash256(unsigned char* message, size_t message_len, unsigned char* digest);
+
+int ripemd160(unsigned char* message, size_t message_len, unsigned char* digest);
+
+int hash160(unsigned char* message, size_t message_len, unsigned char* digest);
 
 std::string digest2hex(unsigned char* digest, size_t len);
 
@@ -23,5 +28,11 @@ boost::multiprecision::int1024_t from_bytes(const unsigned char* digest, size_t 
 void to_bytes(boost::multiprecision::int1024_t n, int n_bytes, unsigned char* out, bool big= true);
 
 std::string bytes_to_str(unsigned char* bytes, int n_bytes);
+
+
+const std::string BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+std::string encode_base58(unsigned char* bytes, int len);
+
+std::string encode_base58_checksum(unsigned char* bytes, int len);
 
 #endif //BITCOIN_IN_CPP_CRYPTOGRAPHY_H

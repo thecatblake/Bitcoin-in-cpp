@@ -29,6 +29,32 @@ int hash256(unsigned char* message, size_t message_len, unsigned char* digest) {
     return sha256(digest, SHA256_DIGEST_LENGTH, digest);
 }
 
+int ripemd160(unsigned char* message, size_t message_len, unsigned char* digest) {
+    EVP_MD_CTX* ctx;
+
+    if((ctx = EVP_MD_CTX_new()) == nullptr)
+        return -1;
+
+    if(!EVP_DigestInit(ctx, EVP_ripemd160()))
+        return -1;
+
+    if(!EVP_DigestUpdate(ctx, message, message_len))
+        return -1;
+
+    if(!EVP_DigestFinal(ctx, digest, nullptr))
+        return -1;
+
+    EVP_MD_CTX_free(ctx);
+
+    return 0;
+}
+
+int hash160(unsigned char* message, size_t message_len, unsigned char* digest) {
+    unsigned char out[SHA256_DIGEST_LENGTH];
+    sha256(message, message_len, out);
+    return ripemd160(out, SHA256_DIGEST_LENGTH, digest);
+}
+
 std::string digest2hex(std::string digest) {
     std::string result;
 
@@ -87,4 +113,32 @@ std::string bytes_to_str(unsigned char* bytes, int n_bytes) {
     }
 
     return result;
+}
+
+std::string encode_base58(unsigned char* bytes, int len) {
+    int count = 0;
+    for(int i=1; i <= len; i++) {
+        if(bytes[i]==0)
+            count++;
+        else
+            break;
+    }
+    auto num = from_bytes(bytes, len);
+    std::string result;
+    while(num > 0) {
+        auto mod = (int)(num % 58);
+        num = num / 58;
+        result.insert(0, 1, BASE58_ALPHABET[mod]);
+    }
+    for(int i=0; i < count; i++) result += "1";
+    return result;
+}
+
+std::string encode_base58_checksum(unsigned char* bytes, int len) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    hash256(bytes, len, hash);
+    unsigned char inp[len + 4];
+    memcpy(inp, bytes, len);
+    memcpy(inp+len, hash, 4);
+    return encode_base58(inp, len + 4);
 }
