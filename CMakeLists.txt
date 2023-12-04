@@ -42,5 +42,8 @@ add_executable(test test/test.cpp
         test/test_cryptography.h)
 target_link_libraries(test Bitcoin GTest::gtest_main)
 
+add_executable(generate_address generate_address.cpp)
+target_link_libraries(generate_address Bitcoin)
+
 include(GoogleTest)
 gtest_discover_tests(test)
