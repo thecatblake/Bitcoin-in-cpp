@@ -75,7 +75,7 @@ int S256Point::hash160(unsigned char *digest, bool compressed) {
 
 std::string S256Point::address(bool compressed, bool testnet) {
     unsigned char out[1+RIPEMD160_DIGEST_LENGTH];
-    hash160(out+1, compressed);
+    this->hash160(out+1, compressed);
     out[0] = testnet ? 0x6f : 0x00;
     return encode_base58_checksum(out, 1+RIPEMD160_DIGEST_LENGTH);
 }
@@ -110,7 +110,7 @@ Signature PrivateKey::sign(const boost::multiprecision::int1024_t& z, boost::mul
 }
 
 PrivateKey::PrivateKey(const std::string& secret): secret(boost::multiprecision::int1024_t(secret)) {
-
+    point = this->secret * G;
 }
 
 int Signature::der(unsigned char *out, bool big) const {

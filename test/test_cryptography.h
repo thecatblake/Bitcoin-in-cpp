@@ -54,6 +54,18 @@ TEST(CryptographyTest, base58_encoding) {
     std::string result = encode_base58(bytes, 32);
 
     EXPECT_EQ(result, "9MA8fRQrT4u8Zj8ZRd6MAiiyaxb2Y1CMpvVkHQu5hVM6");
+
+    boost::multiprecision::int1024_t x2("423978563313610541820751014531939415111138679983830741516375588441135684140");
+    to_bytes(x2, 32, bytes);
+    result = encode_base58(bytes, 32);
+
+    EXPECT_EQ(result, "4fE3H2E6XMp4SsxtwinF7w9a34ooUrwWe4WsW1458Pd");
+
+    boost::multiprecision::int1024_t x3("90067678915080561991476742139334357116447229582337733602832701972810841451190");
+    to_bytes(x3, 32, bytes);
+    result = encode_base58(bytes, 32);
+
+    EXPECT_EQ(result, "EQJsjkd6JaGwxrjEhfeqPenqHwrBmPQZjJGNSCHBkcF7");
 }
 
 #endif //BITCOIN_IN_CPP_TEST_CRYPTOGRAPHY_H

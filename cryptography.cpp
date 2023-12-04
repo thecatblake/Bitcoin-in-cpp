@@ -117,7 +117,7 @@ std::string bytes_to_str(unsigned char* bytes, int n_bytes) {
 
 std::string encode_base58(unsigned char* bytes, int len) {
     int count = 0;
-    for(int i=1; i <= len; i++) {
+    for(int i=0; i < len; i++) {
         if(bytes[i]==0)
             count++;
         else
@@ -130,8 +130,9 @@ std::string encode_base58(unsigned char* bytes, int len) {
         num = num / 58;
         result.insert(0, 1, BASE58_ALPHABET[mod]);
     }
-    for(int i=0; i < count; i++) result += "1";
-    return result;
+    std::string prefix;
+    for(int i=0; i < count; i++) prefix += "1";
+    return prefix + result;
 }
 
 std::string encode_base58_checksum(unsigned char* bytes, int len) {
