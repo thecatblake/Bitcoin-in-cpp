@@ -125,4 +125,18 @@ TEST(secp256k1Test, address_of_public_key) {
     EXPECT_EQ(result3, "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1");
 }
 
+TEST(secp256k1Test, wif_format) {
+    PrivateKey pk(5003);
+
+    EXPECT_EQ(pk.wif(true, true), "cMahea7zqjxrtgAbB7LSGbcQUr1uX1ojuat9jZodMN8rFTv2sfUK");
+
+    PrivateKey pk2("33715652388894101");
+
+    EXPECT_EQ(pk2.wif(false, true), "91avARGdfge8E4tZfYLoxeJ5sGBdNJQH4kvjpWAxgzczjbCwxic");
+
+    PrivateKey pk3("1481187632463599");
+
+    EXPECT_EQ(pk3.wif(true, false), "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgiuQJv1h8Ytr2S53a");
+}
+
 #endif //BITCOIN_IN_CPP_TEST_SECP256K1_H

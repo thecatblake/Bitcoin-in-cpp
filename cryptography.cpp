@@ -83,10 +83,10 @@ boost::multiprecision::int1024_t hex2int512(std::string hex) {
     return x;
 }
 
-boost::multiprecision::int1024_t from_bytes(const unsigned char* digest, size_t len) {
+boost::multiprecision::int1024_t from_bytes(const unsigned char* digest, size_t len, bool big) {
     boost::multiprecision::int1024_t x = 0;
     for(size_t i = 0; i < len; i++) {
-        size_t k = digest[len - i - 1];
+        size_t k = digest[big ? len - i - 1 : i];
         boost::multiprecision::int1024_t t = 256;
         t = boost::multiprecision::pow(t, i);
         t *= k;

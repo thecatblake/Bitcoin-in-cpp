@@ -63,6 +63,7 @@ public:
     PrivateKey(boost::multiprecision::int1024_t  secret);
     std::string to_string();
     Signature sign(const boost::multiprecision::int1024_t& z, boost::multiprecision::int1024_t k = -1);
+    std::string wif(bool compressed, bool testnet) const;
     boost::multiprecision::int1024_t secret;
     S256Point point = S256Point(0, 0, true);
 private:

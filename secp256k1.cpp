@@ -113,6 +113,19 @@ PrivateKey::PrivateKey(const std::string& secret): secret(boost::multiprecision:
     point = this->secret * G;
 }
 
+std::string PrivateKey::wif(bool compressed, bool testnet) const {
+    unsigned char bytes[1 + 32 + 1];
+    to_bytes(secret, 32, bytes+1);
+    bytes[0] = testnet ? 0xef : 0x80;
+
+    if(compressed) {
+        bytes[1 + 32] = 0x01;
+        return encode_base58_checksum(bytes, 1 + 32 + 1);
+    }
+
+    return encode_base58_checksum(bytes, 1 + 32);
+}
+
 int Signature::der(unsigned char *out, bool big) const {
     unsigned char rbin[32];
     to_bytes(r, 32, rbin);
