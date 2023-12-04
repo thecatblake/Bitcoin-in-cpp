@@ -97,7 +97,7 @@ boost::multiprecision::int1024_t from_bytes(const unsigned char* digest, size_t 
 }
 
 void to_bytes(boost::multiprecision::int1024_t n, int n_bytes, unsigned char* out, bool big) {
-    for(int i=1; i <= n_bytes; i++) {
+    for(int i=0; i < n_bytes; i++) {
         unsigned char rem = (unsigned char)(n % 256);
         out[big ? n_bytes - i : i] = rem;
         n /= 256;

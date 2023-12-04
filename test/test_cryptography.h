@@ -62,4 +62,26 @@ TEST(CryptographyTest, base58_encoding) {
     EXPECT_EQ(result, "EQJsjkd6JaGwxrjEhfeqPenqHwrBmPQZjJGNSCHBkcF7");
 }
 
+TEST(CryptographyTest, little_endian) {
+    unsigned char bytes1[] = {0x99, 0xc3, 0x98, 0x00, 0x00, 0x00, 0x00, 0x00};
+    auto n = from_bytes(bytes1, 8, false);
+
+    EXPECT_EQ(n, 10011545);
+
+    unsigned char bytes2[] = {161, 53, 239, 0x01, 0x00, 0x00, 0x00, 0x00};
+    n = from_bytes(bytes2, 8, false);
+
+    EXPECT_EQ(n, 32454049);
+}
+
+TEST(CryptographyTest, from_little_endian) {
+    boost::multiprecision::int1024_t n = 1;
+    unsigned char bytes[4];
+    unsigned char bytes_e[4] = {1, 0, 0, 0};
+    to_bytes(n, 4, bytes, false);
+    for(int i=0; i < 4; i++) {
+        EXPECT_EQ(bytes[i], bytes_e[i]);
+    }
+}
+
 #endif //BITCOIN_IN_CPP_TEST_CRYPTOGRAPHY_H
