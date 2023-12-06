@@ -35,4 +35,7 @@ std::string encode_base58(unsigned char* bytes, int len);
 
 std::string encode_base58_checksum(unsigned char* bytes, int len);
 
+boost::multiprecision::int1024_t read_varint(unsigned char* bytes, int* len_out);
+int encode_varint(boost::multiprecision::int1024_t n, unsigned char* out);
+
 #endif //BITCOIN_IN_CPP_CRYPTOGRAPHY_H

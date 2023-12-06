@@ -143,3 +143,42 @@ std::string encode_base58_checksum(unsigned char* bytes, int len) {
     memcpy(inp+len, hash, 4);
     return encode_base58(inp, len + 4);
 }
+
+boost::multiprecision::int1024_t read_varint(unsigned char* bytes, int* len_out) {
+    if (bytes[0] == 0xfd) {
+        *len_out = 3;
+        return from_bytes(bytes, 2, false);
+    } else if (bytes[0] == 0xfe) {
+        *len_out = 5;
+        return from_bytes(bytes, 4, false);
+    } else if (bytes[0] == 0xff) {
+        *len_out = 9;
+        return from_bytes(bytes, 8, false);
+    }
+
+    *len_out = 1;
+    return from_bytes(bytes, 1, false);
+}
+
+int encode_varint(boost::multiprecision::int1024_t n, unsigned char* out) {
+    int len = 1;
+    auto x = n.convert_to<long long int>();
+    boost::multiprecision::int1024_t t2("18446744073709551616");
+    if(n < 0xfd) {
+        out[0] = x;
+    } else if (n < 0x10000) {
+        len = 1 + 2;
+        out[0] = 0xfd;
+        to_bytes(n, 2, out+1, false);
+    } else if (n < 0x100000000) {
+        len = 1 + 4;
+        out[0] = 0xfe;
+        to_bytes(n, 4, out+1, false);
+    } else if (n < t2) {
+        len = 1 + 8;
+        out[0] = 0xff;
+        to_bytes(n, 8, out+1, false);
+    }
+
+    return len;
+}

@@ -26,6 +26,10 @@ add_library(Bitcoin
         secp256k1.h
         cryptography.cpp
         cryptography.h
+        Tx.cpp
+        Tx.h
+        Script.cpp
+        Script.h
 )
 
 target_link_libraries(Bitcoin crypto ssl)
@@ -44,6 +48,9 @@ target_link_libraries(test Bitcoin GTest::gtest_main)
 
 add_executable(generate_address generate_address.cpp)
 target_link_libraries(generate_address Bitcoin)
+
+add_executable(address_finder address_finder.cpp)
+target_link_libraries(address_finder Bitcoin)
 
 include(GoogleTest)
 gtest_discover_tests(test)
