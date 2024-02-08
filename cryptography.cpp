@@ -104,6 +104,11 @@ void to_bytes(boost::multiprecision::int1024_t n, int n_bytes, unsigned char* ou
     }
 }
 
+void to_bytes(unsigned long n, int n_bytes, unsigned char* out, bool big) {
+    boost::multiprecision::int1024_t m(n);
+    to_bytes(m, n_bytes, out, big);
+}
+
 std::string bytes_to_str(unsigned char* bytes, int n_bytes) {
     std::string result;
     for (int i=0; i < n_bytes; i++) {
@@ -162,10 +167,9 @@ boost::multiprecision::int1024_t read_varint(unsigned char* bytes, int* len_out)
 
 int encode_varint(boost::multiprecision::int1024_t n, unsigned char* out) {
     int len = 1;
-    auto x = n.convert_to<long long int>();
     boost::multiprecision::int1024_t t2("18446744073709551616");
     if(n < 0xfd) {
-        out[0] = x;
+        to_bytes(n, 1, out, false);
     } else if (n < 0x10000) {
         len = 1 + 2;
         out[0] = 0xfd;
@@ -181,4 +185,19 @@ int encode_varint(boost::multiprecision::int1024_t n, unsigned char* out) {
     }
 
     return len;
+}
+
+int varint_size(boost::multiprecision::int1024_t n) {
+    int len = 1;
+    auto x = n.convert_to<long long int>();
+    boost::multiprecision::int1024_t t2("18446744073709551616");
+    if(n < 0xfd) {
+        return 1;
+    } else if (n < 0x10000) {
+        return 3;
+    } else if (n < 0x100000000) {
+        return 5;
+    } else if (n < t2) {
+        return 9;
+    }
 }

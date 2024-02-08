@@ -34,6 +34,46 @@ Tx Tx::parse(unsigned char* bytes) {
     return tx;
 }
 
+std::vector<unsigned char> Tx::serialize() {
+    int tx_in_varint_size = varint_size(inputs.size());
+    int tx_out_varint_size = varint_size(outputs.size());
+
+    unsigned char bytes[4 + tx_in_varint_size + tx_out_varint_size + 4];
+    to_bytes(version, 4, bytes);
+    encode_varint(inputs.size(), bytes+4);
+    encode_varint(outputs.size(),bytes+4+tx_in_varint_size);
+    to_bytes(locktime, 4, bytes+4+tx_in_varint_size+tx_out_varint_size);
+
+    std::vector<unsigned char> result;
+    result.reserve(version+tx_in_varint_size);
+
+    auto it = result.begin();
+
+    std::copy(bytes, bytes+4, it);
+    it += 4;
+    std::copy(bytes+4, bytes+4+tx_in_varint_size, it);
+
+    for(auto& input : inputs) {
+        auto input_bytes = input.serialize();
+        result.insert(result.end(), input_bytes.begin(), input_bytes.end());
+    }
+
+    it = result.end();
+    result.reserve(tx_out_varint_size);
+    std::copy(bytes+4+tx_in_varint_size, bytes+4+tx_in_varint_size+tx_out_varint_size, it);
+
+    for(auto& output: outputs) {
+        auto output_bytes = output.serialize();
+        result.insert(result.end(), output_bytes.begin(), output_bytes.end());
+    }
+
+    it = result.end();
+    result.reserve(4);
+    std::copy(bytes+4+tx_in_varint_size+tx_out_varint_size, bytes+4+tx_in_varint_size+tx_out_varint_size+4, it);
+
+    return result;
+}
+
 TxIn TxIn::parse(unsigned char *bytes, int* bytes_out) {
     TxIn input;
 
@@ -58,6 +98,28 @@ TxIn TxIn::parse(unsigned char *bytes, int* bytes_out) {
     return input;
 }
 
+std::vector<unsigned char> TxIn::serialize() {
+    unsigned long size = 32 + 4 + 4;
+
+    unsigned char bytes[size];
+    to_bytes(prev_tx, 32, bytes, false);
+    to_bytes(prev_tx_id, 4, bytes+32, false);
+    to_bytes(sequence, 4, bytes+32+4, false);
+
+    std::vector<unsigned char> result;
+    result.reserve(size + script_raw.size());
+
+    auto it = result.begin();
+
+    std::copy(bytes, bytes+32+4, it);
+    it += 32 + 4;
+    std::copy(script_raw.begin(), script_raw.end(), it);
+    it += script_raw.size();
+    std::copy(bytes+32+4, bytes+32+4+4, it);
+
+    return result;
+}
+
 TxOut TxOut::parse(unsigned char *bytes, int* bytes_out) {
     TxOut output;
 
@@ -76,4 +138,22 @@ TxOut TxOut::parse(unsigned char *bytes, int* bytes_out) {
     *bytes_out = 8 + bytes_read + script_length;
 
     return output;
+}
+
+std::vector<unsigned char> TxOut::serialize() {
+    unsigned long size = 4;
+
+    unsigned char bytes[size];
+    to_bytes(amount, 4, bytes, false);
+
+    std::vector<unsigned char> result;
+    result.reserve(size + script_pubkey_raw.size());
+
+    auto it = result.begin();
+
+    std::copy(bytes, bytes+4, it);
+    it += 4;
+    std::copy(script_pubkey_raw.begin(), script_pubkey_raw.end(), it);
+
+    return result;
 }

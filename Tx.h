@@ -16,6 +16,7 @@ struct TxIn {
     unsigned long sequence;
 
     static TxIn parse(unsigned char* bytes, int* bytes_read);
+    std::vector<unsigned char> serialize();
 };
 
 struct TxOut {
@@ -23,11 +24,13 @@ struct TxOut {
     std::vector<unsigned char> script_pubkey_raw;
 
     static TxOut parse(unsigned char* bytes, int* bytes_read);
+    std::vector<unsigned char> serialize();
 };
 
 class Tx {
 public:
     static Tx parse(unsigned char* bytes);
+    std::vector<unsigned char> serialize();
 
     long version;
     std::vector<TxIn> inputs;
