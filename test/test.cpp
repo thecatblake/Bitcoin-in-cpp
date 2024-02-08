@@ -6,3 +6,4 @@
 #include "test_Point.h"
 #include "test_secp256k1.h"
 #include "test_cryptography.h"
+#include "test_tx.h"
