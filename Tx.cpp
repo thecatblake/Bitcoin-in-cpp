@@ -74,6 +74,15 @@ std::vector<unsigned char> Tx::serialize() {
     return result;
 }
 
+Tx::Tx() {
+
+}
+
+Tx::Tx(long version, std::vector<TxIn> inputs, std::vector<TxOut> outputs, unsigned long locktime, bool testnet):
+    version(version), inputs(inputs), outputs(outputs), locktime(locktime), testnet(testnet) {
+
+}
+
 TxIn TxIn::parse(unsigned char *bytes, int* bytes_out) {
     TxIn input;
 
@@ -120,6 +129,14 @@ std::vector<unsigned char> TxIn::serialize() {
     return result;
 }
 
+TxIn::TxIn(boost::multiprecision::int1024_t prev_tx, unsigned long prev_tx_id): prev_tx(prev_tx), prev_tx_id(prev_tx_id) {
+
+}
+
+TxIn::TxIn() {
+
+}
+
 TxOut TxOut::parse(unsigned char *bytes, int* bytes_out) {
     TxOut output;
 
@@ -156,4 +173,12 @@ std::vector<unsigned char> TxOut::serialize() {
     std::copy(script_pubkey_raw.begin(), script_pubkey_raw.end(), it);
 
     return result;
+}
+
+TxOut::TxOut() {
+
+}
+
+TxOut::TxOut(boost::multiprecision::int1024_t amount, std::vector<unsigned char> script_raw): amount(amount), script_pubkey_raw(script_raw) {
+
 }

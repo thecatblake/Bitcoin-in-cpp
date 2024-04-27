@@ -33,6 +33,7 @@ std::string bytes_to_str(unsigned char* bytes, int n_bytes);
 
 const std::string BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 std::string encode_base58(unsigned char* bytes, int len);
+void decode_base58(std::string s, unsigned char* out);
 
 std::string encode_base58_checksum(unsigned char* bytes, int len);
 

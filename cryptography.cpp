@@ -201,3 +201,18 @@ int varint_size(boost::multiprecision::int1024_t n) {
         return 9;
     }
 }
+
+void decode_base58(std::string s, unsigned char *out) {
+    boost::multiprecision::int1024_t num = 0;
+    for(auto c : s) {
+        num *= 58;
+        auto it = std::find(BASE58_ALPHABET.begin(), BASE58_ALPHABET.end(), c);
+
+        if(it == BASE58_ALPHABET.end()) break;
+        num += it - BASE58_ALPHABET.begin();
+    }
+    unsigned char t[25];
+    to_bytes(num, 25, t);
+
+    memcpy(out, t+1, 20);
+}
